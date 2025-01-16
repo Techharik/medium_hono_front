@@ -2,14 +2,17 @@ import React, { useState } from 'react'
 import Quetos from '../components/Quetos'
 import InputBox from '../components/InputBox'
 import { signValidation } from '@pattari/medium-types'
-
+import axios from 'axios'
+import { apiurl } from '../../config/dbconfig'
+import { useNavigate } from 'react-router-dom'
+console.log(apiurl)
 const Signup = () => {
     const [signupForm, setSingupForm] = useState<signValidation>({
         name: '',
         email: '',
         password: ''
     })
-
+    const naviagte = useNavigate()
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         console.log(name, value)
@@ -20,6 +23,17 @@ const Signup = () => {
 
     }
 
+    const SignUpSubmit = async () => {
+        try {
+            const { data } = await axios.post(`${apiurl}/signup`, signupForm);
+            if (data.success == true) {
+                localStorage.setItem('token', data.token);
+                naviagte('/blog')
+            }
+        } catch (e) {
+            console.log(e)
+        }
+    }
 
 
 
@@ -44,7 +58,9 @@ const Signup = () => {
                     </label>
                     <input name='password' type='passowrd' onChange={handleChange} value={signupForm.password} className='border border-slate-500 p-2 rounded-lg w-[300px] ' />
                 </div>
-                <button className='bg-blue-400 p-2 px-5 rounded-lg text-white hover:bg-blue-500'>
+                <button className='bg-blue-400 p-2 px-5 rounded-lg text-white hover:bg-blue-500'
+                    onClick={SignUpSubmit}
+                >
                     Submit
                 </button>
             </div>
